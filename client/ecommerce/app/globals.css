@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+:root {
+  --foreground: #ffffff;
+}
+ 
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
