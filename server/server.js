@@ -10,6 +10,7 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 const forUser = require('./router/userRoute')
 const forAdmin = require('./router/adminRoute')
 const forProduct = require('./router/productRoute')
+const forOrder = require('./router/orderRouter')
 a.use(cookieParser())
 a.use(express.json())
 a.use(c({
@@ -19,6 +20,7 @@ a.use(c({
     credentials: true
   }));
 a.use('/api/user',forUser)
+a.use('/api/checkout',forOrder)
 a.use('/api/admin',forAdmin)
 a.use('/api/product',forProduct)
 mongos.connect(process.env.MONGODB_URI).then(()=>{console.log("successfully connected")}).catch((error)=>{console.log("connection error",error)})

@@ -30,19 +30,20 @@ const Signup = async (req, res) => {
 
 const Login = async (req, res) => {
     try {
+        console.log(req.body)
         const {email, password} = req.body;
         const loginUser = await userModal.findOne({email});
-        if (!loginUser){
+         if (!loginUser){
             return res.status(400).json({message: 'User not found'})
         }else{
             const decode = await bcrypt.compare(password, loginUser.password);
+            console.log(decode);
             if(decode){
-                const userToken = loginUser.generateToken();
-                res.cookie('token', userToken, {
+                const userToken = await loginUser.generateToken();
+                res.cookie('userToken', userToken, {
                     httpOnly: true,
                     sameSite: 'strict',
-                    secure: process.env.NODE_ENV === 'development',
-                    expires: new Date(Date.now()+3*24*60*60*1000)
+                     expires: new Date(Date.now()+3*24*60*60*1000)
                 })
                 return res.status(200).json({message: 'Login successful', loginUser})
             }else{
@@ -54,4 +55,15 @@ const Login = async (req, res) => {
     }
 }
 
-module.exports = {Signup, Login}
+const verifyUser = async(req, res)=>{
+    try {
+        const userVerify = req.user
+        if(userVerify){
+            return res.status(200).json({message: 'user verified', 'isUser': true})
+        }
+    } catch (error) {
+        return res.status(500).json({message: 'verifyUser ma error ho', error: error.message})
+    }
+}
+
+module.exports = {Signup, Login, verifyUser}

@@ -1,4 +1,5 @@
 export const login = async(req)=>{
+    console.log("Calal vako xa hai myg")
     try {
         const a = await fetch('http://localhost:5000/api/user/login',{
             method: 'POST',

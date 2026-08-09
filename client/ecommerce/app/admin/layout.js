@@ -69,7 +69,6 @@ export default function RootLayout({ children }) {
       const data = await response.json();
       setAdmin(data);
     };
-  
     verifyAdmin();
   }, []);
   

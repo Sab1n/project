@@ -56,7 +56,7 @@ const verifyAdmin = async(req,res)=>{
     try {
         const adminVerify = req.admin;
         if(adminVerify){
-         return    res.status(200).json({message: 'admin verified', 'isAdmin':true})
+         return res.status(200).json({message: 'admin verified', 'isAdmin':true})
         }
     } catch (error) {
         return res.status(500).json({message: 'Internal server error', error: error.message})

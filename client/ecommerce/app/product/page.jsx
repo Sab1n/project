@@ -1,23 +1,49 @@
 'use client'
-
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from "@tanstack/react-query"
 import { getProduct } from '../services/productServices'
 import { useCartList } from '../utils/cartContext'
+import { useRouter } from "next/navigation"
 
 
 export default function Product() {
+
    
-    const { data:productData, isLoading, isError } = useQuery({
+    const { data:productData, isLoading, isError, isSuccess } = useQuery({
         queryKey: ['clientproduct'],
         queryFn: getProduct
     })
         console.log(productData)
     const [quantity, setQuantity] = useState(0);
     const {cart, setCart} = useCartList();
+    const [product, setProduct] = useState([])
+    const [user, setUser] = useState()
+    console.log(product,'yo prdouct state ho')
+    const router = new useRouter();
 
+    useEffect(()=>{
+        const verifyUser = async()=>{
+            try {
+                const a = await fetch('http://localhost:5000/api/user/verifyUser',{
+                    method: 'GET',
+                    credentials: 'include',
+                })
+                const b = await a.json();
+                setUser(b)
+            } catch (error) {
+                
+            }
+        };
+        verifyUser();
+    },[])
+    console.log(user,'yo user ho')
 
- 
+    useEffect(()=>{
+        if(isSuccess){
+        setProduct(productData?.a)
+        }
+    },[isSuccess, productData])
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-[#0D1117] px-6 py-16">
@@ -52,9 +78,17 @@ export default function Product() {
         )
     }
 
+    function gotoLogin(){
+        router.push('/login')
+    }
+
+    function gotoCheckout(){
+        router.push('/checkout')
+    }
+
     function minus(id){
         console.log(id)
-        const a = productData?.a?.find((item=> item._id === id))
+        const a = product?.find((item=> item._id === id))
         if(a){
             if(quantity > 0){
                 setQuantity(quantity - 1)
@@ -65,34 +99,47 @@ export default function Product() {
     }
     
     function plus(id){
-        console.log(id)
-        const a = productData?.a?.find((item => item._id === id))
-        const productStock = a?.stock
-        if(a){
-            if(quantity < productStock){
-                setQuantity(quantity + 1)
+        const a = product?.find((item=> item._id === id))
+        const quanityExist = a?.quantity
+        const isStockAvailable = a?.stock;
+       if(isStockAvailable >0){
+        if(a && quanityExist>0){
+            if(quanityExist < a.stock){
+                setProduct(product.map((item)=> item._id === id ? {...item, quantity: item.quantity + 1}: item))
             }else{
-                alert('Stock limit reached')
+                alert('Quantity cannot be more than stock')
             }
+        }else{
+            setProduct(product.map((item)=> item._id === id ? {...item, quantity: 1}: item))
+             
         }
-        console.log(a)
+       }else{
+        alert("STock nai caina")
+       }
+    
     }
 
     function atc(id){
-        console.log(cart)
-        const a = productData?.a?.find((item=> item._id === id));
-        console.log(a)
-        if(a){
-            const b = cart?.find((item)=> item._id === id)
-            if(b){
-                setCart(cart.map((item)=> item._id === id ?
-                {...item, quantity: item.quantity + quantity} : item))
+        console.log("This is the cart items",product)
+        const a = product?.find((item=> item._id === id));
+        const existingProduct = cart?.find((item=> item._id === id));
+        console.log("Product ma ",a);
+        console.log("cart ma",existingProduct)
+        if(a && a.quantity > 0 && a.quantity <= a.stock){
+            if(existingProduct ){
+                console.log("Yeha samma xiryo")
+                setCart(cart.map((item)=> item._id === id ? {...item, quantity: item.quantity + a.quantity}: item))
+                setProduct((product)=> product.map((item)=> item._id === id ? {...item, quantity: 0, stock: item.stock-a.quantity}: item))
             }else{
-                setCart([...cart, {...a, quantity: quantity}])
+                setCart([...cart, {...a}])
+                setProduct((product)=> product.map((item)=> item._id === id ? {...item, quantity: 0, stock: item.stock-a.quantity}: item))
+
             }
-        setQuantity(0)
-        }
+
+    }else{
+        console.log("Hello")
     }
+}
 
     return (
         <div className="min-h-screen bg-[#0D1117] px-6 py-16">
@@ -102,7 +149,7 @@ export default function Product() {
                 </h1>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {productData?.a?.map((item, index) => (
+                    {product?.map((item, index) => (
                         <div
                             key={item._id ?? index}
                             className="group relative overflow-hidden rounded-xl border border-white/5 bg-[#1E2333] transition-colors duration-200 hover:border-indigo-500/40"
@@ -122,42 +169,93 @@ export default function Product() {
                                 <p className="line-clamp-2 text-xs leading-relaxed text-slate-400">
                                     {item.desc}
                                 </p>
-                                <p className="pt-1 font-mono text-sm font-semibold tracking-tight text-indigo-400">
-                                    ${item.sellingPrice}
-                                </p>
-                                <p className="pt-1 font-mono text-sm font-semibold tracking-tight text-indigo-400">
-                                    {item.stock}
-                                </p>
-                            </div>
-                            <div>
-                                <button onClick={()=>minus(item._id)}>-</button>
-                                <span>{quantity}</span>
-                                <button onClick={()=>plus(item._id)}>+</button>
+                                <div className="flex items-center justify-between pt-1">
+                                    <p className="font-mono text-sm font-semibold tracking-tight text-indigo-400">
+                                        ${item.sellingPrice}
+                                    </p>
+                                    <p className="font-mono text-xs text-slate-500">
+                                        {item.stock} in stock
+                                    </p>
+                                </div>
                             </div>
 
-                            <div>
-                                <button onClick={()=>atc(item._id)}>
+                            <div className="flex items-center justify-center gap-4 border-t border-white/5 px-4 py-3">
+                                <button
+                                    onClick={()=>minus(item._id)}
+                                    className="flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-[#161B27] text-sm font-medium text-slate-300 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+                                >
+                                    −
+                                </button>
+                                <span className="w-6 text-center font-mono text-sm text-slate-100">
+                                    {item?.quantity || 0} 
+                                </span>
+                                <button
+                                    onClick={()=>plus(item._id)}
+                                    className="flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-[#161B27] text-sm font-medium text-slate-300 transition-colors hover:border-indigo-500/40 hover:text-indigo-400"
+                                >
+                                    +
+                                </button>
+                            </div>
+
+                            <div className="px-4 pb-4">
+                                <button
+                                    onClick={()=>atc(item._id)}
+                                    className="w-full rounded-lg bg-indigo-500 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-400"
+                                >
                                     Add To Cart
                                 </button>
                             </div>
+
+
 
                             <div className="pointer-events-none absolute inset-y-0 left-0 w-[2px] scale-y-0 bg-indigo-500 transition-transform duration-200 group-hover:scale-y-100" />
                         </div>
                     ))}
                 </div>
 
-                <div>
-                    {
-                        cart?.map(item=>(
-                            <div>
-                            <img src={item.picture}/>
-                            <span>{item.name}</span>
-                            <span>{item.price}</span>
-                            <span>{item.desc}</span>
-                            <span>{item.quantity}</span>
+                <div className="mt-16">
+                    <h2 className="mb-6 text-lg font-semibold tracking-tight text-slate-100">
+                        Cart
+                    </h2>
+                    <div className="space-y-3">
+                        {cart?.map((item, index)=>(
+                            <div
+                                key={item._id ?? index}
+                                className="flex items-center gap-4 rounded-xl border border-white/5 bg-[#1E2333] p-3"
+                            >
+                                <img
+                                    src={item.picture}
+                                    alt={item.name}
+                                    className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
+                                />
+                                <div className="min-w-0 flex-1">
+                                    <p className="truncate text-sm font-medium text-slate-100">
+                                        {item.name}
+                                    </p>
+                                    <p className="line-clamp-1 text-xs text-slate-400">
+                                        {item.desc}
+                                    </p>
+                                </div>
+                                <p className="font-mono text-sm font-semibold text-indigo-400">
+                                    ${item.price}
+                                </p>
+                                <p className="font-mono text-xs text-slate-500">
+                                    x{item.quantity}
+                                </p>
+
                             </div>
-                        ))
-                    }
+                        ))}
+                        <div>
+                        {
+                            cart.length > 0 ? <>
+                            {
+                            
+                            user?.isUser? <><button onClick={()=>gotoCheckout()}>Process To Checkout</button></>:<><button onClick={()=>gotoLogin()}>Login</button> </>
+                            }
+                            </>:<><p>No items in the catr yet</p></>
+                        }
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

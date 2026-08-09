@@ -15,8 +15,7 @@ const userSchema = new mongoose.Schema({
     password:{
         type: String,
         required: true,
-        select: false
-    },
+     },
     address:{
         type: String,
         required: true
@@ -43,7 +42,7 @@ userSchema.methods.generateToken = async function(){
             _id : this._id,
             email : this.email,
         },
-        process.env.JWT_SECRET,
+        process.env.JWT_SECRET_KEY,
         {expiresIn: '7d'}
     )
 }

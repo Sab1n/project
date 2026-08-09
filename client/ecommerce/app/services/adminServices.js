@@ -23,9 +23,7 @@ export const adminLogin = async (req) => {
             body: JSON.stringify(req),
             credentials: 'include',
         });
-
         const data = await response.json();
-
         // Throw an error for non-OK responses
         if (!response.ok) {
             throw new Error(data.message || 'Login failed');
