@@ -15,7 +15,7 @@ export default function Checkout(){
         name: z.string().min(1, { message: 'Name is required' }),
         email: z.string().email({ message: 'Invalid email address' }),
         address: z.string().min(1, { message: 'Address is required' }),
-        phone: z.string().min(10, { message: 'Phone number must be at least 10 digits' }),
+        phone: z.number().min(10, { message: 'Phone number must be at least 10 digits' }),
     })
 
     const{register, handleSubmit, reset, formState:{errors}} = useForm({
@@ -23,10 +23,12 @@ export default function Checkout(){
     })
 
     const checkoutMutation = useMutation({
-        mutationFn: (data,product) => checkout(data,product),
+        mutationFn: ({data,product}) => checkout({data,product}),
         onSuccess: (data) => {
             console.log('Checkout successful', data)
+            setCart([]);
             reset();
+            window.location.href = '/product'
         },onError: (error) => {
             console.error('Error during checkout', error)
         }
@@ -37,7 +39,9 @@ export default function Checkout(){
             _id: item._id,
             quantity: item.quantity,
         }));
-        checkoutMutation.mutate(data,product)
+        console.log('yo product hooo',product)
+        
+        checkoutMutation.mutate({data,product})
     }
      
     return(
@@ -71,7 +75,7 @@ export default function Checkout(){
                     {errors.address && <span>{errors.address.message}</span>}
                 </div>
                 <div>
-                    <input type="number" placeholder="Enter Your Phone Number" {...register('phone')} valueAsNumber={true}/>
+                    <input type="number" placeholder="Enter Your Phone Number" {...register('phone',{valueAsNumber: true})}/>
                     {errors.phone && <span>{errors.phone.message}</span>}
                 </div>
                 <div>

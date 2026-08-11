@@ -1,5 +1,5 @@
 'use client'
-export const checkout = async(data,product) =>{
+export const checkout = async({data,product}) =>{
     try {
         const a = await fetch('http://localhost:5000/api/checkout/order',{
             method: 'POST',
