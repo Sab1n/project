@@ -33,6 +33,7 @@ const addProduct = async(req, res) => {
 const displayProduct = async(req, res) => {
     try {
         const a = await productModal.find({}).populate('admin','name');
+        console.log(a,'display product controller ma a')
         if(a.length===0){
             return res.status(404).json({message:'kei chaina'})
         }else{

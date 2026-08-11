@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { checkout } from '../services/checkoutServices'
+import { checkout } from '../services/orderServices'
 
 
 export default function Checkout(){
