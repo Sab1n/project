@@ -5,5 +5,6 @@ const b = require('../middleware/authmiddleware')
 
 router.route('/order').post(b.userMiddleWare,a.addOrder)
 router.route('/getorder').get(b.adminMiddleWare,a.getOrder)
+router.route('/status').patch(b.adminMiddleWare,a.updateStatus)
 
 module.exports = router

@@ -15,7 +15,7 @@ a.use(cookieParser())
 a.use(express.json())
 a.use(c({
     origin: "http://localhost:3000",
-    methods: ['GET', 'DELETE', 'POST', 'PUT'],
+    methods: ['GET', 'DELETE', 'POST', 'PUT','PATCH'],
     allowedHeaders:['Content-Type','Authorization'],
     credentials: true
   }));

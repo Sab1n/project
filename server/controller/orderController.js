@@ -42,10 +42,8 @@ const addOrder = async(req, res)=> {
 
 const getOrder = async(req,res) =>{
     try{
-        console.log('get order samma ako cha ')
-        const a = await orderModal.find({}).populate('user','name').populate('product','name picture sellingPrice')
-        console.log(a)
-        if(a.length==0){
+         const a = await orderModal.find({}).populate('product._id','name picture sellingPrice')
+         if(a.length==0){
             return res.status(404).json({message: 'order chaina'})
         }else{
             return res.status(200).json({message: 'Orders fetched successfully', a})
@@ -55,4 +53,12 @@ const getOrder = async(req,res) =>{
     }
 }
 
-module.exports = {addOrder, getOrder}
+const updateStatus = async(req,res)=>{
+    try {
+        
+    } catch (error) {
+        return res.status(500).json({message: 'update status controller ma error', error: error.message})
+    }
+}
+
+module.exports = {addOrder, getOrder, updateStatus}
