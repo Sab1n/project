@@ -55,7 +55,36 @@ const getOrder = async(req,res) =>{
 
 const updateStatus = async(req,res)=>{
     try {
-        
+        const {id, status} = req.body;
+        const currentOrder = await orderModal.findOne({_id: id});
+        if (!currentOrder) {
+            return res.status(404).json({message: 'Order not found'});
+        }
+        if (currentOrder.status === 'cancelled') {
+            return res.status(400).json({message: 'Cannot update a cancelled order'});
+        }
+        if(status === 'canceled'){
+            const cancelledOrder = await orderModal.findOne({_id: id});
+            for (const item of cancelledOrder.product){
+                const product = await productModal.findOne({_id: item._id});
+                const stockUpdate = await productModal.findOneAndUpdate(
+                    {_id: item._id},
+                    {$set: { stock : product.stock + item.quantity }},
+                    {new: true}
+                );
+                const quantityUpdate = await orderModal.findOneAndUpdate(
+                    {_id: id, 'product._id': item._id},
+                    {$set: {'product.$.quantity': 0}},
+                    {new: true}
+                );
+            }
+        }
+        const statusUpdate = await orderModal.findOneAndUpdate(
+            {_id: id},
+            {$set: {status: status}},
+            {new: true}
+        );
+        return res.status(200).json({message: 'Status updated successfully', order: statusUpdate});
     } catch (error) {
         return res.status(500).json({message: 'update status controller ma error', error: error.message})
     }

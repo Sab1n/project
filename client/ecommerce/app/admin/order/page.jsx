@@ -36,6 +36,7 @@ const statusMutation = useMutation({
 
     function changeStatus(id ,status){
         statusMutation.mutate({id, status})
+        console.log(`Changing status of order ${id} to ${status}`);
     }
 
     const orders = data?.a || [];
@@ -83,16 +84,47 @@ const statusMutation = useMutation({
                                     </td>
                                     <td className="px-4 py-3 align-top">
                                         <div className="flex flex-col gap-1.5">
-                                            <button className="text-xs uppercase tracking-wide px-2.5 py-1 rounded-full border text-amber-400 border-amber-400/40 bg-amber-400/10 hover:bg-amber-400/20 transition-colors"
-                                            onClick={()=>changeStatus(order._id, 'Pending')}>
+                                            <span className={`text-xs uppercase tracking-wide px-2.5 py-1 rounded-full border w-fit mb-1 font-medium ${
+                                                order.status === 'delivered'
+                                                    ? 'text-emerald-400 border-emerald-400/40 bg-emerald-400/10'
+                                                    : order.status === 'canceled'
+                                                    ? 'text-red-400 border-red-400/40 bg-red-400/10'
+                                                    : 'text-amber-400 border-amber-400/40 bg-amber-400/10'
+                                            }`}>
+                                                {order.status || 'pending'}
+                                            </span>
+
+                                            <button
+                                                disabled={order.status === 'canceled'}
+                                                className={`text-xs uppercase tracking-wide px-2.5 py-1 rounded-full border transition-colors ${
+                                                    order.status === 'canceled'
+                                                        ? 'text-slate-600 border-slate-700 bg-slate-800/30 cursor-not-allowed opacity-50'
+                                                        : 'text-amber-400 border-amber-400/40 bg-amber-400/10 hover:bg-amber-400/20'
+                                                }`}
+                                                onClick={()=>changeStatus(order._id, 'pending')}
+                                            >
                                                 Pending
                                             </button>
-                                            <button className="text-xs uppercase tracking-wide px-2.5 py-1 rounded-full border text-emerald-400 border-emerald-400/40 bg-emerald-400/10 hover:bg-emerald-400/20 transition-colors"
-                                            onClick={()=>changeStatus(order._id, 'Delivered')}>
+                                            <button
+                                                disabled={order.status === 'canceled'}
+                                                className={`text-xs uppercase tracking-wide px-2.5 py-1 rounded-full border transition-colors ${
+                                                    order.status === 'canceled'
+                                                        ? 'text-slate-600 border-slate-700 bg-slate-800/30 cursor-not-allowed opacity-50'
+                                                        : 'text-emerald-400 border-emerald-400/40 bg-emerald-400/10 hover:bg-emerald-400/20'
+                                                }`}
+                                                onClick={()=>changeStatus(order._id, 'delivered')}
+                                            >
                                                 Delivered
                                             </button>
-                                            <button className="text-xs uppercase tracking-wide px-2.5 py-1 rounded-full border text-red-400 border-red-400/40 bg-red-400/10 hover:bg-red-400/20 transition-colors"
-                                            onClick={()=>changeStatus(order._id, 'Canceled')}>
+                                            <button
+                                                disabled={order.status === 'canceled'}
+                                                className={`text-xs uppercase tracking-wide px-2.5 py-1 rounded-full border transition-colors ${
+                                                    order.status === 'canceled'
+                                                        ? 'text-slate-600 border-slate-700 bg-slate-800/30 cursor-not-allowed opacity-50'
+                                                        : 'text-red-400 border-red-400/40 bg-red-400/10 hover:bg-red-400/20'
+                                                }`}
+                                                onClick={()=>changeStatus(order._id, 'canceled')}
+                                            >
                                                 Cancel
                                             </button>
                                         </div>
