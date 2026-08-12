@@ -233,7 +233,6 @@ export default function AddProduct() {
             ))}
           </div>
         </div>
-
       </div>
     </div>
   )

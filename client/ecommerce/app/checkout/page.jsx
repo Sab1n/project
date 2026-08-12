@@ -22,6 +22,10 @@ export default function Checkout(){
         resolver: zodResolver(formSchema)
     })
 
+    const totalCart = cart?.reduce((acc,item)=>{
+        return acc + (item.sellingPrice*item.quantity)
+    },0) || 0
+
     const checkoutMutation = useMutation({
         mutationFn: ({data,product}) => checkout({data,product}),
         onSuccess: (data) => {
@@ -45,46 +49,89 @@ export default function Checkout(){
     }
      
     return(
-        <div>
-            <h1>Checkout</h1>
-            <div>
-                {cart?.map((item, index) => (
-                    <div>
-                        <img src={item.picture} />
-                        <h2>{item?.name}</h2>
-                        <p>Price: {item?.sellingPrice}</p>
-                        <span>{item?.desc}</span>
-                        <span>Discount: {item?.discount}</span>
-                        <span>Quantity: {item?.quantity}</span>
-                    </div>
-                ))}
-            </div>
+        <div className="min-h-screen bg-[#0a0e1a] text-slate-200 font-mono px-4 py-10 md:px-10">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-indigo-300 mb-8 border-l-2 border-indigo-500 pl-4">
+                Checkout
+            </h1>
 
-            <div>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <input type="text" placeholder="Enter Your Name" {...register('name')}/>
-                    {errors.name && <span>{errors.name.message}</span>}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+
+                {/* Cart summary */}
+                <div className="bg-[#0f1424] border border-indigo-900/40 rounded-lg p-5 space-y-4">
+                    {cart?.map((item, index) => (
+                        <div
+                            key={item._id ?? index}
+                            className="flex gap-4 items-center bg-[#131a2e] border border-indigo-900/30 rounded-md p-3 transition-all duration-200 hover:border-l-2 hover:border-l-indigo-400 hover:shadow-[0_0_12px_rgba(99,102,241,0.25)]"
+                        >
+                            <img
+                                src={item.picture}
+                                className="w-16 h-16 object-cover rounded-md border border-indigo-900/40"
+                            />
+                            <div className="flex-1 text-sm">
+                                <h2 className="text-slate-100 font-semibold">{item?.name}</h2>
+                                <p className="text-indigo-300">Price: {item?.sellingPrice}</p>
+                                <span className="block text-slate-400 text-xs">{item?.desc}</span>
+                                <span className="block text-slate-400 text-xs">Discount: {item?.discount}</span>
+                                <span className="block text-slate-400 text-xs">Quantity: {item?.quantity}</span>
+                            </div>
+                        </div>
+                    ))}
+                    <div className="flex justify-between items-center pt-4 border-t border-indigo-900/40">
+                        <span className="text-slate-400 text-sm">Total</span>
+                        <span className="text-lg font-bold text-indigo-300">{totalCart}</span>
+                    </div>
                 </div>
-                <div>
-                    <input type="email" placeholder="Enter Your Email" {...register('email')} />
-                    {errors.email && <span>{errors.email.message}</span>}
+
+                {/* Checkout form */}
+                <div className="bg-[#0f1424] border border-indigo-900/40 rounded-lg p-6">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Enter Your Name"
+                                {...register('name')}
+                                className="w-full bg-[#0a0e1a] border border-indigo-900/40 rounded-md px-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 outline-none transition-all duration-200 focus:border-l-2 focus:border-l-indigo-400 focus:shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+                            />
+                            {errors.name && <span className="block mt-1 text-xs text-red-400">{errors.name.message}</span>}
+                        </div>
+                        <div>
+                            <input
+                                type="email"
+                                placeholder="Enter Your Email"
+                                {...register('email')}
+                                className="w-full bg-[#0a0e1a] border border-indigo-900/40 rounded-md px-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 outline-none transition-all duration-200 focus:border-l-2 focus:border-l-indigo-400 focus:shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+                            />
+                            {errors.email && <span className="block mt-1 text-xs text-red-400">{errors.email.message}</span>}
+                        </div>
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Enter Your Address"
+                                {...register('address')}
+                                className="w-full bg-[#0a0e1a] border border-indigo-900/40 rounded-md px-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 outline-none transition-all duration-200 focus:border-l-2 focus:border-l-indigo-400 focus:shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+                            />
+                            {errors.address && <span className="block mt-1 text-xs text-red-400">{errors.address.message}</span>}
+                        </div>
+                        <div>
+                            <input
+                                type="number"
+                                placeholder="Enter Your Phone Number"
+                                {...register('phone',{valueAsNumber: true})}
+                                className="w-full bg-[#0a0e1a] border border-indigo-900/40 rounded-md px-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 outline-none transition-all duration-200 focus:border-l-2 focus:border-l-indigo-400 focus:shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+                            />
+                            {errors.phone && <span className="block mt-1 text-xs text-red-400">{errors.phone.message}</span>}
+                        </div>
+                        <div>
+                            <button
+                                type="submit"
+                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-2.5 rounded-md transition-all duration-200 hover:shadow-[0_0_16px_rgba(99,102,241,0.4)]"
+                            >
+                                Place Order
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <input type="text" placeholder="Enter Your Address" {...register('address')} />
-                    {errors.address && <span>{errors.address.message}</span>}
-                </div>
-                <div>
-                    <input type="number" placeholder="Enter Your Phone Number" {...register('phone',{valueAsNumber: true})}/>
-                    {errors.phone && <span>{errors.phone.message}</span>}
-                </div>
-                <div>
-                    <button type="submit">
-                        Place Order
-                    </button>
-                </div>
-                
-                </form>
+
             </div>
         </div>
     )
