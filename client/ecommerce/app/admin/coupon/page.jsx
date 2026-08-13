@@ -3,7 +3,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { addCoupon } from "../../services/discountServices"
+import { addCoupon, displayCoupon } from "../../services/discountServices"
+import { tr } from "zod/locales";
 
 export default function AddCoupon(){
     
@@ -18,6 +19,12 @@ const {register, handleSubmit, reset, formState: {errors}} = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {type: 'Rs'}
 })
+
+const {data:couponData,isLoading,isError} = useQuery({
+    queryKey: ['coupon'],
+    queryFn: displayCoupon
+})
+console.log('get API bata ako coupon',couponData)
 
 const couponMutation = useMutation({
     mutationFn: (data) => addCoupon(data),
@@ -58,6 +65,29 @@ return(
                 Create
             </button>
         </form>
+
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Coupon ID</th>
+                        <th>Code</th>
+                        <th>Quantity</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {couponData?.coupon?.map((item)=>(
+                        <tr key={item._id}>
+                            <td>{item._id.slice(0,5)}...</td>
+                            <td>{item.code}</td>
+                            <td>{item.quantity}</td>
+                            {item.type === 'Rs' ? <td>{item.type}{item.value}</td> : <td>{item.value}{item.type}</td>}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     </div>
 )
 }
