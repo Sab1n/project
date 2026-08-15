@@ -35,16 +35,21 @@ const displayCoupon = async(req,res)=>{
 
 const verifyCoupon = async(req, res)=>{
     try {
-        const {code} = req.body.code;
-        const couponCheck = await discountModal.find({code})
-        if(!couponCheck){
-            return res.status(404).json({message: "Coupon Code not found"})
-        }else{
-            if(couponCheck.quantity < 0){
-                return res.status(204).json({message: "Coupon is already used"})
+        console.log(req.body.code,'yo body ho req ko')
+        const {code} = req.body;
+        console.log('original',code)
+        const upperCode = code.toUpperCase()
+        console.log(upperCode, 'capital original')
+        const couponCheck = await discountModal.findOne({code:upperCode})
+        console.log(couponCheck,'DB result')
+        if(couponCheck){
+            if(couponCheck.quantity <= 0){
+                return res.status(204).json({message: 'Coupon already Used'})
             }else{
-                return res.status(200).json({message: "Coupon applied", coupon: couponCheck})
+                return res.status(200).json({message: 'Coupon successfully applied', coupon: couponCheck})
             }
+        }else{
+            return res.status(404).json({message: 'Wrong coupon Code', upperCode})
         }
     } catch (error) {
         return res.status(500).json({message: "applyCoupon ma error", error: error.message})

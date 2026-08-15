@@ -5,6 +5,6 @@ const b = require('../middleware/authmiddleware')
 
 router.route('/addCoupon').post(b.adminMiddleWare,a.addCoupon)
 router.route('/displayCoupon').get(a.displayCoupon)
-router.route('/verifyCoupon').post(a.verifyCoupon)
+router.route('/verifyCoupon').post(b.userMiddleWare,a.verifyCoupon)
 
 module.exports = router;
