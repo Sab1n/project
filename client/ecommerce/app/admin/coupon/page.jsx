@@ -4,12 +4,12 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { addCoupon, displayCoupon } from "../../services/discountServices"
-import { tr } from "zod/locales";
+ 
 
 export default function AddCoupon(){
     
 const formSchema = z.object({
-    code: z.string().min(4,{ message: 'Code is Required' }),
+    code: z.string().toUpperCase().min(4,{ message: 'Code is Required' }),
     quantity: z.number().min(1, {messsage: 'Quantity is required'}),
     type: z.enum(['%','Rs'], {message: 'Type is required'}),
     value: z.number().min(1,{messasge: 'Value is required'})

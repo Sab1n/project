@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { checkout } from '../services/orderServices'
+import { useState } from 'react'
+import { verifyCoupon } from '../services/discountServices'
 
 
 export default function Checkout(){
@@ -17,6 +19,8 @@ export default function Checkout(){
         address: z.string().min(1, { message: 'Address is required' }),
         phone: z.number().min(10, { message: 'Phone number must be at least 10 digits' }),
     })
+
+    const [discount, setDiscount] = useState('')
 
     const{register, handleSubmit, reset, formState:{errors}} = useForm({
         resolver: zodResolver(formSchema)
@@ -38,6 +42,16 @@ export default function Checkout(){
         }
     })
 
+    const discountMutation = useMutation({
+        mutationFn: (discount) => verifyCoupon(discount),
+        onSuccess: (discount) => {
+            console.log('discount code successfully send to backend', discount)
+            setDiscount('')
+        },onError: (error) => {
+            console.error('Error during applying discount', error)
+        }
+    })
+
     function onSubmit(data){
         const product = cart.map(item => ({
             _id: item._id,
@@ -47,6 +61,13 @@ export default function Checkout(){
         
         checkoutMutation.mutate({data,product})
     }
+
+    function applyDiscount(e){
+        e.preventDefault()
+        console.log(discount)
+        discountMutation.mutate(discount)
+    }
+     
      
     return(
         <div className="min-h-screen bg-[#0a0e1a] text-slate-200 font-mono px-4 py-10 md:px-10">
@@ -130,10 +151,15 @@ export default function Checkout(){
                             </button>
                         </div>
                     </form>
+                    <form onSubmit={applyDiscount}>
+                        <input type="text"
+                        placeholder='Enter Your Discount Code'
+                        value={discount}
+                        onChange={(e)=>setDiscount(e.target.value)}/>
+                        <button type='submit'>Apply Discount</button>
+                     </form>
                 </div>
-
             </div>
         </div>
     )
-
 }

@@ -16,10 +16,11 @@ a.use(cookieParser())
 a.use(express.json())
 a.use(c({
     origin: "http://localhost:3000",
-    methods: ['GET', 'DELETE', 'POST', 'PUT','PATCH'],
+    methods: ['GET', 'DELETE', 'POST', 'PUT','PATCH','OPTIONS'],
     allowedHeaders:['Content-Type','Authorization'],
     credentials: true
   }));
+  
 a.use('/api/user',forUser)
 a.use('/api/checkout',forOrder)
 a.use('/api/admin',forAdmin)

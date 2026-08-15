@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const discountSchema =  new mongoose.Schema({
     code:{
         type: String,
-        required: true
+        required: true,
+        unique: true,
     },
     quantity:{
         type: Number,
