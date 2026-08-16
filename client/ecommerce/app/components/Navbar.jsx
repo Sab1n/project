@@ -6,6 +6,7 @@ export default function Navbar(){
             <Link href="/" className="text-white text-lg font-semibold">
             Home
             </Link>
+            <Link href='../product'>Products</Link>
             <div className="space-x-4">
             <Link href="../signup" className="text-gray-300 hover:text-white">
             Signup
