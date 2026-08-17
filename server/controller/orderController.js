@@ -1,15 +1,18 @@
 const orderModal = require('../modals/orderModal')
 const productModal = require('../modals/productModal')
+const discountModal = require('../modals/discountModal')
 
 const addOrder = async(req, res)=> {
     try {
-        console.log(req.body)
-        console.log(req.user);
+        console.log(req.body,'yo order request ko body ho')
+        console.log(req.user,'yo order user ko user ho');
         let fakeProduct = []
         let realProduct = []
         const {name, email, address, phone} = req.body.data
         const product = req.body.product;
-         for (const singleProduct of product){
+        const coupon = req.body.appliedCoupon;
+        const total = req.body.finalTotal
+        for (const singleProduct of product){
             const exisitingProduct = await productModal.findOne({_id: singleProduct._id});
             if(!exisitingProduct){
                 fakeProduct.push(singleProduct)
@@ -21,9 +24,26 @@ const addOrder = async(req, res)=> {
             email,
             address,
             phone,
+            total,
+            coupon: coupon ? {
+                couponId: coupon._id,
+                code: coupon.code,
+                type: coupon.type,
+                value: coupon.value
+            } : undefined ,
             product: realProduct,
             user: req.user._id
         })
+        if(coupon){
+            const selectedCoupon = await discountModal.findOne({_id: coupon._id})
+            if(selectedCoupon){
+                const quantityUpdate = await discountModal.findOneAndUpdate(
+                    {_id: coupon._id},
+                    {$inc: {quantity: -1}},
+                    {new: true}
+                )
+            }
+        }
         for (const stockMinus of realProduct){
             console.log(stockMinus._id)
             const product = await productModal.findOne({_id: stockMinus._id})

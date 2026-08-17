@@ -22,6 +22,26 @@ const orderSchema = new mongoose.Schema({
         type:Number,
         required: true
     },
+    total:{
+        type:Number,
+        required:true
+    },
+    coupon: {
+        couponId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'discount codes' 
+            },
+            code: {
+                type: String
+            },
+            type: {
+                type: String,
+                enum: ['Rs', '%']
+            },
+            value: {
+                type: Number
+            }
+        },
    product:[
     {
         _id:{

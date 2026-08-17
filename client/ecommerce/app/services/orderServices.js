@@ -1,10 +1,10 @@
 'use client'
-export const checkout = async({data,product}) =>{
+export const checkout = async({data,product,appliedCoupon,finalTotal}) =>{
     try {
         const a = await fetch('http://localhost:5000/api/checkout/order',{
             method: 'POST',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({data,product}),
+            body: JSON.stringify({data,product,appliedCoupon,finalTotal}),
             credentials: 'include'
         }
         )

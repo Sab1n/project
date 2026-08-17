@@ -55,4 +55,6 @@ const verifyCoupon = async(req, res)=>{
         return res.status(500).json({message: "applyCoupon ma error", error: error.message})
     }
 }
+
+
 module.exports = {addCoupon, displayCoupon, verifyCoupon}

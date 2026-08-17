@@ -31,7 +31,7 @@ export default function Checkout(){
     },0) || 0
 
     const checkoutMutation = useMutation({
-        mutationFn: ({data,product}) => checkout({data,product}),
+        mutationFn: ({data,product,appliedCoupon,finalTotal}) => checkout({data,product,appliedCoupon,finalTotal}),
         onSuccess: (data) => {
             console.log('Checkout successful', data)
             setCart([]);
@@ -64,15 +64,14 @@ export default function Checkout(){
         }
     }
     const finalTotal = totalCart - discountAmt
-
+     
     function onSubmit(data){
         const product = cart.map(item => ({
             _id: item._id,
             quantity: item.quantity,
         }));
         console.log('yo product hooo',product)
-        
-        checkoutMutation.mutate({data,product})
+        checkoutMutation.mutate({data,product,appliedCoupon,finalTotal})
     }
 
     function applyDiscount(e){
@@ -110,7 +109,7 @@ export default function Checkout(){
                         </div>
                     ))}
                     <div className="flex justify-between items-center pt-4 border-t border-indigo-900/40">
-                        <span className="text-slate-400 text-sm">Total</span>
+                        <span className="text-slate-400 text-sm">Gross Total</span>
                         <span className="text-lg font-bold text-indigo-300">{totalCart}</span>
                     </div>
                     <div>
