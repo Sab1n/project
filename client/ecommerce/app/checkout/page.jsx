@@ -42,15 +42,28 @@ export default function Checkout(){
         }
     })
 
+    const [appliedCoupon, setappliedCoupon] = useState();
+
     const discountMutation = useMutation({
         mutationFn: (discount) => verifyCoupon(discount),
         onSuccess: (discount) => {
             console.log('discount code successfully send to backend', discount)
             setDiscount('')
+            setappliedCoupon(discount.coupon)
         },onError: (error) => {
             console.error('Error during applying discount', error)
         }
     })
+
+    let discountAmt;
+    if(appliedCoupon){
+        if(appliedCoupon.type === '%'){
+            discountAmt = totalCart * (appliedCoupon.value / 100);
+        }else{
+            discountAmt = Math.min(appliedCoupon.value, totalCart)
+        }
+    }
+    const finalTotal = totalCart - discountAmt
 
     function onSubmit(data){
         const product = cart.map(item => ({
@@ -67,7 +80,6 @@ export default function Checkout(){
         console.log(discount)
         discountMutation.mutate(discount)
     }
-     
      
     return(
         <div className="min-h-screen bg-[#0a0e1a] text-slate-200 font-mono px-4 py-10 md:px-10">
@@ -100,6 +112,13 @@ export default function Checkout(){
                     <div className="flex justify-between items-center pt-4 border-t border-indigo-900/40">
                         <span className="text-slate-400 text-sm">Total</span>
                         <span className="text-lg font-bold text-indigo-300">{totalCart}</span>
+                    </div>
+                    <div>
+                        {appliedCoupon ? (
+                            <p>Total After Coupon applied: {finalTotal}</p>
+                        ): (
+                            <p></p>
+                        )}
                     </div>
                 </div>
 
