@@ -62,7 +62,7 @@ const addOrder = async(req, res)=> {
 
 const getOrder = async(req,res) =>{
     try{
-         const a = await orderModal.find({}).populate('product._id','name picture sellingPrice')
+         const a = await orderModal.find({}).populate('product._id','name picture sellingPrice').populate('coupon','code type value')
          if(a.length==0){
             return res.status(404).json({message: 'order chaina'})
         }else{

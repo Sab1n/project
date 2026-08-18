@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import QueryProvider from "./utils/queryProvider";
 import { CartList } from "./utils/cartContext";
+import { UserVerify } from "./utils/userContext";
 
 
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+      <UserVerify>
       <Navbar />
       <QueryProvider>
       <CartList>
@@ -36,6 +38,7 @@ export default function RootLayout({ children }) {
       
       </CartList>
       </QueryProvider>
+      </UserVerify>
       </body>
     </html>
   );

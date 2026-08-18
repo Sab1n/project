@@ -22,10 +22,10 @@ const inter = Inter({
 
 const navItems = [
   { label: "Overview", icon: "grid", active: true , link:'/admin'},
-  { label: "Orders", icon: "box" , link:'order'},
-  { label: "Products", icon: "tag", link:'product' },
+  { label: "Orders", icon: "box" , link:'/admin/order'},
+  { label: "Products", icon: "tag", link:'/admin/product' },
   { label: "Customers", icon: "users" },
-  { label: "Coupon", icon: "wallet", link:'coupon' },
+  { label: "Coupon", icon: "wallet", link:'/admin/coupon' },
   { label: "Settings", icon: "settings" }
 ];
 
